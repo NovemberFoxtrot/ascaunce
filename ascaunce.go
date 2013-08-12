@@ -83,9 +83,9 @@ func parsesplit(in <-chan string) <-chan string {
 	return out
 }
 
-func resulter(in <-chan string) {
+func resulter(c map[string]int, in <-chan string) {
 	for gram := range in {
-		fmt.Println(gram, len(gram))
+		c[gram] += 1
 	}
 }
 
@@ -94,8 +94,12 @@ func main() {
 
 	t.input(os.Stdin)
 
+	counts := make(map[string]int)
+
 	parser := parse(t.rawdata)
 	parselower := parselower(parser)
 	parsespliter := parsesplit(parselower)
-	resulter(parsespliter)
+	resulter(counts, parsespliter)
+
+	fmt.Println(counts)
 }
