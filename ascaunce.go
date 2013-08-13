@@ -70,10 +70,12 @@ func parsesplit(in <-chan string) <-chan string {
 	go func() {
 		for line := range in {
 			grams := strings.Split(line, " ")
+			var prev string
 			for _, gram := range grams {
 				if len(gram) > 0 {
-					out <- gram
+					out <- (prev + gram)
 				}
+				prev = gram
 			}
 		}
 		close(out)
