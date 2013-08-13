@@ -21,7 +21,6 @@ func (t *textdata) input(f io.Reader) {
 		t.rawdata = make([]string, 0)
 	}
 
-	// todo scan options
 	for scanner.Scan() {
 		someline := scanner.Text()
 		t.rawdata = append(t.rawdata, someline)
@@ -42,7 +41,7 @@ func parse(lines []string) <-chan string {
 	go func() {
 		for _, line := range lines {
 			if len(line) > 0 {
-			  out <- line
+				out <- line
 			}
 		}
 
@@ -73,7 +72,7 @@ func parsesplit(in <-chan string) <-chan string {
 			grams := strings.Split(line, " ")
 			for _, gram := range grams {
 				if len(gram) > 0 {
-				  out <- gram
+					out <- gram
 				}
 			}
 		}
