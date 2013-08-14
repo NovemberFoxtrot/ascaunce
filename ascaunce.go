@@ -12,6 +12,8 @@ import (
 type textdata struct {
 	rawdata []string
 	data    []string
+	freq    map[string]int
+	total   int
 }
 
 func (t *textdata) input(f io.Reader) {
@@ -25,10 +27,6 @@ func (t *textdata) input(f io.Reader) {
 		someline := scanner.Text()
 		t.rawdata = append(t.rawdata, someline)
 	}
-}
-
-func (t *textdata) tf(term string, norm bool) float64 {
-	return 0.0
 }
 
 func init() {
@@ -84,19 +82,23 @@ func parsesplit(in <-chan string) <-chan string {
 	return out
 }
 
-func resulter(c map[string]int, in <-chan string) int {
-	var total int
-
-	for gram := range in {
-		total += 1
-		c[gram] += 1
+func (t *textdata) resulter(in <-chan string) {
+	if t.freq == nil {
+		t.freq = make(map[string]int)
 	}
 
-	return total
+	for gram := range in {
+		t.total += 1
+		t.freq[gram] += 1
+	}
 }
 
-func lexd(total, unique int) int {
-	return int(float64(unique) / float64(total) * 100)
+func (t *textdata) lexd() float64 {
+	return float64(len(t.freq)) / float64(t.total)
+}
+
+func (t *textdata) tf(term string) float64 {
+	return float64(t.freq[term]) / float64(t.total)
 }
 
 func main() {
@@ -104,12 +106,10 @@ func main() {
 
 	t.input(os.Stdin)
 
-	counts := make(map[string]int)
-
 	parser := parse(t.rawdata)
 	parselower := parselower(parser)
 	parsespliter := parsesplit(parselower)
-	total := resulter(counts, parsespliter)
+	t.resulter(parsespliter)
 
-	fmt.Println(lexd(total, len(counts)))
+	fmt.Println(t.lexd(), t.tf("love"))
 }
