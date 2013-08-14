@@ -84,10 +84,19 @@ func parsesplit(in <-chan string) <-chan string {
 	return out
 }
 
-func resulter(c map[string]int, in <-chan string) {
+func resulter(c map[string]int, in <-chan string) int {
+	var total int
+
 	for gram := range in {
+		total += 1
 		c[gram] += 1
 	}
+
+	return total
+}
+
+func lexd(total, unique int) int {
+	return int(float64(unique) / float64(total) * 100)
 }
 
 func main() {
@@ -100,7 +109,7 @@ func main() {
 	parser := parse(t.rawdata)
 	parselower := parselower(parser)
 	parsespliter := parsesplit(parselower)
-	resulter(counts, parsespliter)
+	total := resulter(counts, parsespliter)
 
-	fmt.Println(counts)
+	fmt.Println(lexd(total, len(counts)))
 }
