@@ -102,9 +102,10 @@ func (t *textdata) tf(term string) float64 {
 }
 
 func main() {
-	for _, args := range os.Args[1:] {
+	t := make([]textdata, len(os.Args[1:]))
+
+	for index, args := range os.Args[1:] {
 		f, err := os.Open(args)
-		t := new(textdata)
 
 		if err != nil {
 			fmt.Println(err)
@@ -112,13 +113,13 @@ func main() {
 
 		defer f.Close()
 
-		t.input(f)
+		t[index].input(f)
 
-		parser := parse(t.rawdata)
+		parser := parse(t[index].rawdata)
 		parselower := parselower(parser)
 		parsespliter := parsesplit(parselower)
-		t.resulter(parsespliter)
+		t[index].resulter(parsespliter)
 
-		fmt.Println(t.lexd(), t.tf("the"))
+		fmt.Println(t[index].lexd(), t[index].tf("the"))
 	}
 }
