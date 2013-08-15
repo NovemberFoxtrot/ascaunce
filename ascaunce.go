@@ -102,14 +102,23 @@ func (t *textdata) tf(term string) float64 {
 }
 
 func main() {
-	t := new(textdata)
+	for _, args := range os.Args[1:] {
+		f, err := os.Open(args)
+		t := new(textdata)
 
-	t.input(os.Stdin)
+		if err != nil {
+			fmt.Println(err)
+		}
 
-	parser := parse(t.rawdata)
-	parselower := parselower(parser)
-	parsespliter := parsesplit(parselower)
-	t.resulter(parsespliter)
+		defer f.Close()
 
-	fmt.Println(t.lexd(), t.tf("love"))
+		t.input(f)
+
+		parser := parse(t.rawdata)
+		parselower := parselower(parser)
+		parsespliter := parsesplit(parselower)
+		t.resulter(parsespliter)
+
+		fmt.Println(t.lexd(), t.tf("the"))
+	}
 }
