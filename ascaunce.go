@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"runtime"
 	"strings"
@@ -101,6 +102,25 @@ func (t *textdata) tf(term string) float64 {
 	return float64(t.freq[term]) / float64(t.total)
 }
 
+func idf(textdatum []textdata, term string) float64 {
+	count := 0
+	for _, t := range textdatum {
+		if t.freq[term] != 0 {
+			count += 1
+		}
+	}
+
+	if count == 0 {
+		return 0.0
+	}
+
+	return 1.0 + math.Log(float64(len(textdatum))/float64(count))
+}
+
+func tf_idf(t textdata, textdatum []textdata, term string) float64 {
+	return t.tf(term) * idf(textdatum, term)
+}
+
 func main() {
 	t := make([]textdata, len(os.Args[1:]))
 
@@ -119,7 +139,9 @@ func main() {
 		parselower := parselower(parser)
 		parsespliter := parsesplit(parselower)
 		t[index].resulter(parsespliter)
+	}
 
-		fmt.Println(t[index].lexd(), t[index].tf("the"))
+	for _, td := range t {
+		fmt.Println(tf_idf(td, t, "for"))
 	}
 }
