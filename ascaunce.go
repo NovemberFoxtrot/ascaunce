@@ -143,5 +143,7 @@ func main() {
 
 	for _, td := range t {
 		fmt.Println(tf_idf(td, t, "for"))
+		fmt.Println(tf_idf(td, t, "a"))
+		fmt.Println(tf_idf(td, t, "i"))
 	}
 }
