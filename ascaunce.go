@@ -121,10 +121,28 @@ func tf_idf(t textdata, textdatum []textdata, term string) float64 {
 	return t.tf(term) * idf(textdatum, term)
 }
 
-func main() {
-	t := make([]textdata, len(os.Args[1:]))
+func processargs(args []string) ([]string, []string) {
+	files := make([]string, 0)
+	terms := make([]string, 0)
 
-	for index, args := range os.Args[1:] {
+	for _, value := range args {
+
+		if _, err := os.Stat(value); os.IsNotExist(err) {
+			terms = append(terms, value)
+		} else {
+			files = append(files, value)
+		}
+	}
+
+	return files, terms
+}
+
+func main() {
+	files, terms := processargs(os.Args[1:])
+
+	t := make([]textdata, len(files))
+
+	for index, args := range files {
 		f, err := os.Open(args)
 
 		if err != nil {
@@ -142,8 +160,8 @@ func main() {
 	}
 
 	for _, td := range t {
-		fmt.Println(tf_idf(td, t, "for"))
-		fmt.Println(tf_idf(td, t, "a"))
-		fmt.Println(tf_idf(td, t, "i"))
+		for _, value := range terms {
+			fmt.Println(value, tf_idf(td, t, value))
+		}
 	}
 }
